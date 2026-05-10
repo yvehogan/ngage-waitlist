@@ -8,61 +8,64 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { FadeIn } from "@/components/animations";
+import { categories, faqsByCategory } from "@/data/faq-data";
 
-const categories = [
-  "General questions",
-  "Data & Technical Questions",
-  "Council Resource Questions",
-  "Political & Reputational Questions",
-  "Impact & Evaluation Questions",
-  "Financial Questions",
-  "Partnership & Governance Questions",
-  "Practical Implementation Questions",
-];
+function renderAnswer(answer: string) {
+  const lines = answer.split("\n");
+  const elements: React.ReactNode[] = [];
+  let i = 0;
 
-const faqsByCategory: Record<string, { question: string; answer: string }[]> = {
-  "General questions": [
-    {
-      question: "What is CitizensNgage?",
-      answer:
-        "CitizensNgage is the CiH philosophy in motion — a youth civic programme and digital platform (programme first, platform second). The programme (delivered with CiH Academy and local youth services across the councils) awakens, educates and enables young people as agents of change through 4–6 week journeys: capacity building, design sprints and real civic actions (FOI, consultations, budget inputs). The platform (app) gives them hyperlocal council information and participation tools, and gives councils dashboards to see and respond to youth voice. Together they add structured programme plus digital infrastructure, building on and complementing existing democratic education and youth engagement work, so young people can engage — and councils can respond — at scale.",
-    },
-    {
-      question: "Who is Creative Ideation Hub?",
-      answer:
-        "Creative Ideation Hub (CiH) is a social enterprise focused on youth civic engagement and democratic participation, working to bridge the gap between young people and local government.",
-    },
-    {
-      question: "Why focus specifically on youth?",
-      answer:
-        "Young people are the most underrepresented demographic in local democracy. By focusing on youth, we build lifelong civic habits and give councils direct insight into the needs of their youngest residents.",
-    },
-    {
-      question: 'What does "pilot partnership" mean?',
-      answer:
-        "A pilot partnership means working with a select number of councils to test, refine, and validate the programme and platform before wider rollout — ensuring it delivers real impact.",
-    },
-  ],
-  "Data & Technical Questions": [
-    {
-      question: "How is user data protected?",
-      answer:
-        "All data is encrypted in transit and at rest. We follow GDPR best practices and conduct regular security audits.",
-    },
-  ],
-  "Council Resource Questions": [
-    {
-      question: "What resources does a council need to participate?",
-      answer:
-        "Councils need a dedicated liaison officer and access to relevant public data. The platform handles the rest.",
-    },
-  ],
-};
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Bullet list: lines starting with • or -
+    if (/^[•\-]\s/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^[•\-]\s/.test(lines[i])) {
+        items.push(lines[i].replace(/^[•\-]\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ul key={`ul-${i}`} className="my-2 list-disc space-y-1 pl-5">
+          {items.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // Numbered list: lines starting with 1. 2. etc
+    if (/^\d+[.)\s]/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^\d+[.)\s]/.test(lines[i])) {
+        items.push(lines[i].replace(/^\d+[.)\s]+\s*/, ""));
+        i++;
+      }
+      elements.push(
+        <ol key={`ol-${i}`} className="my-2 list-decimal space-y-1 pl-5">
+          {items.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // Regular paragraph
+    if (line.trim()) {
+      elements.push(<p key={`p-${i}`} className={i > 0 ? "mt-2" : ""}>{line}</p>);
+    }
+    i++;
+  }
+
+  return elements;
+}
 
 export function FAQ() {
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("General questions");
+  const [activeCategory, setActiveCategory] = useState("General Questions");
 
   const currentFaqs = faqsByCategory[activeCategory] || [];
   const filteredFaqs = currentFaqs.filter(
@@ -129,25 +132,45 @@ export function FAQ() {
                 />
               </div>
 
-              <Accordion defaultValue={[0]}>
-                {filteredFaqs.map((faq, index) => (
-                  <AccordionItem
-                    key={index}
-                    value={index}
-                    className="mb-4 overflow-hidden rounded-[24px] border border-[#D81B60] bg-[#6B3A1A]"
+              {filteredFaqs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-[24px] border border-[#D81B60] bg-[#6B3A1A] px-6 py-12 text-center">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mb-4 text-gray-400">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                    <path d="M8 11h6" />
+                  </svg>
+                  <p className="text-lg font-medium text-white">No results found</p>
+                  <p className="mt-1 text-sm text-gray-400">
+                    No questions match &quot;{search}&quot;. Try a different keyword or browse another category.
+                  </p>
+                  <button
+                    onClick={() => setSearch("")}
+                    className="mt-4 rounded-full border border-[#FF6B35] bg-[#2A1108] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#FF6B35]"
                   >
-                    <AccordionTrigger className="px-5 py-4 text-sm font-medium text-white hover:no-underline">
-                      Q: {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="px-5 pb-5 text-sm leading-relaxed text-[#E4E7EC]">
-                      <p>A: {faq.answer}</p>
-                      <button className="mt-4 rounded-full bg-[#2A1108] border border-[#FF6B35] px-5 py-2.5 text-sm font-semibold text-white">
-                        Contact Support
-                      </button>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                    Clear search
+                  </button>
+                </div>
+              ) : (
+                <Accordion defaultValue={[0]}>
+                  {filteredFaqs.map((faq, index) => (
+                    <AccordionItem
+                      key={index}
+                      value={index}
+                      className="mb-4 overflow-hidden rounded-[24px] border border-[#D81B60] bg-[#6B3A1A]"
+                    >
+                      <AccordionTrigger className="px-5 py-4 text-sm font-medium text-white hover:no-underline">
+                        Q: {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="px-5 pb-5 text-sm leading-relaxed text-[#E4E7EC]">
+                        <div>{renderAnswer(faq.answer)}</div>
+                        {/* <button className="mt-4 rounded-full bg-[#2A1108] border border-[#FF6B35] px-5 py-2.5 text-sm font-semibold text-white">
+                          Contact Support
+                        </button> */}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              )}
             </div>
           </div>
         </div>
