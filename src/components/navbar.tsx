@@ -37,7 +37,7 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <a href="https://form.typeform.com/to/tZ7KAy8y" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-full bg-[#FF6B35] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#E64A19] transition-colors">
+          <a href="https://forms.cloud.microsoft/r/72efWQW2nn" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-full bg-[#FF6B35] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#E64A19] transition-colors">
             Join The Waitlist
           </a>
         </div>
