@@ -29,7 +29,7 @@ const unageo = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "nGage - Track Your Council, Share Your Voice",
+  title: "ngage - Track Your Council, Share Your Voice",
   description:
     "Understand what your council is doing, track promises, and share your voice on decisions that affect your community.",
   icons: {

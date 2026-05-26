@@ -49,7 +49,7 @@ export function Hero() {
           <div className="overflow-hidden rounded-xl shadow-2xl">
             <Image
               src="/images/hero-mockup.png"
-              alt="nGage platform preview"
+              alt="ngage platform preview"
               width={1200}
               height={750}
               className="w-full"
